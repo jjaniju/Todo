@@ -42,6 +42,7 @@ export default function Authentication({ authenticationMode }) {
         <div>
           <label>Email</label>
           <input
+            id="email"
             type="email"
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
@@ -50,6 +51,7 @@ export default function Authentication({ authenticationMode }) {
         <div>
           <label>Password</label>
           <input
+            id="password"
             type="password"
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
@@ -59,24 +61,20 @@ export default function Authentication({ authenticationMode }) {
           <button>
             {authenticationMode === AuthenticationMode.Login
               ? "Sign in"
-              : "Sign up"
-              }
+              : "Sign up"}
           </button>
         </div>
         <div>
           <Link
             to={
               authenticationMode === authenticationMode.Login
-                ? "/signin"
-                : "/signup"
+                ? "/signup"
+                : "/signin"
             }
           >
             {authenticationMode === AuthenticationMode.Login
               ? "No account? signup"
               : "Already signed up? sign in"}
-              
-              
-            
           </Link>
         </div>
       </form>

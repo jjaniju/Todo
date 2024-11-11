@@ -1,11 +1,11 @@
-import { expect } from "chai"
+import {expect} from 'chai';
 import { initializeTestDb } from './helper/file.js';
 import { pool } from './helper/db.js';
 import { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const { sign } = jwt;
 
-const base_url = 'http://localhost:3001/'
+const base_url = 'http://localhost:3001/';
 
 describe('GET TASKS',() => {
     before(() => {
@@ -37,7 +37,7 @@ describe ('POST task',() => {
     insertTestUser(email,password);
     const token = getToken(email);
     it ("should post a task",async() => {
-        const response = await fetch(base_url + '/create',{
+        const response = await fetch(base_url + 'create',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ describe ('POST task',() => {
       })
     })
     it('should not post a task without description',async() => {
-        const response = await fetch(base_url + '/create',{
+        const response = await fetch(base_url + 'create',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -64,7 +64,7 @@ describe('DELETE task',() => {
     insertTestUser(email,password);
     const token = getToken(email);
     it ('should delete a task',async() => {
-        const response = await fetch(base_url + '/delete/1',{
+        const response = await fetch(base_url + 'delete/1',{
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ describe('DELETE task',() => {
         expect(data).to.include.all.keys('id');
     })
     it('should not delete a task with SQL injection',async() => {
-        const response = await fetch(base_url + '/delete/id=0 or id > 0',{
+        const response = await fetch(base_url + 'delete/id=0 or id > 0',{
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ describe('DELETE task',() => {
             }
         });
         const data = await response.json();
-        expect(response.status).to.equal(500);
+        expect(response.status).to.equal(500,data.error);
         expect(data).to.be.an('object');
         expect(data).to.include.all.keys('error');
     })
@@ -94,7 +94,7 @@ describe('POST register',() => {
     const email = 'register@foo.com';
     const password = 'register123';
     it ('should register with valid email and password',async() => {
-        const response = await fetch(base_url + '/user/register',{
+        const response = await fetch(base_url + 'user/register',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -106,14 +106,29 @@ describe('POST register',() => {
         expect(data).to.be.an('object');
         expect(data).to.include.all.keys('id','email');
     })
+    it("should not post a user with less than 8 charecter password",async() =>{
+        const email = "register@fdfaoo.com"
+        const password = "short4"
+        const response = await fetch(base_url + "user/register",{
+            method:"post",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({"email": email, "password": password})
+        })
+        const data = await response.json();
+        expect(response.status).to.equal(400,data.error);
+        expect(data).to.be.an('object');
+        expect(data).to.include.all.keys('error');
+    })
 })
 
 describe('POST login',() => {
     const email = "login@foo.com";
-    const password = "login123";
+    const password = "jeejee123";
     insertTestUser(email,password);
     it ("should login with valid credentials",async() => {
-        const response = await fetch(base_url + '/user/login',{
+        const response = await fetch(base_url + 'user/login',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
